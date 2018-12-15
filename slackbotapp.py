@@ -1,13 +1,13 @@
 from io import BytesIO
 
 from flask import Flask, send_file, request, abort, jsonify, Response
-from flask_swagger_ui import get_swaggerui_blueprint
 from flask_cors import CORS
+from flask_swagger_ui import get_swaggerui_blueprint
+
 import swagger
 
 app = Flask(__name__)
 CORS(app)
-
 
 challenges = {}
 
@@ -51,35 +51,23 @@ def get_challenge_file(challenge_id):
     if challenge_id in challenges:
         print(challenge_id)
     else:
-        abort(400, 'invalid challenge id')
+        abort(403, 'invalid challenge id')
 
     buffer = BytesIO()
     buffer.write(challenges[challenge_id].encode())
     buffer.seek(0)
-    return send_file(buffer, as_attachment=True,
-                     attachment_filename='challenge',
-                     mimetype='text/csv')
+    return send_file(buffer, as_attachment=True, attachment_filename='challenge', mimetype='text/csv')
 
 
 @app.route('/v2')
 def get_swagger_json():
     return jsonify(swagger.swagger_json)
 
+
 SWAGGER_URL = '/api/docs'
 API_URL = 'http://localhost:5000/v2'
-swaggerui_blueprint = get_swaggerui_blueprint(
-SWAGGER_URL,
-API_URL,
-config={ # Swagger UI config overrides
-'app_name': "Test application"
-},
-)
-
-# Register blueprint at URL
-# (URL must match the one given to factory function above)
+swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, )
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == '__main__':
     app.run(debug=True)
-
-
