@@ -4,7 +4,7 @@ from flask import Flask, send_file, request, abort, jsonify, Response
 from flask_cors import CORS
 from flask_swagger_ui import get_swaggerui_blueprint
 
-import swagger
+from swagger import swagger_json
 
 app = Flask(__name__)
 CORS(app)
@@ -61,7 +61,7 @@ def get_challenge_file(challenge_id):
 
 @app.route('/v2')
 def get_swagger_json():
-    return jsonify(swagger.swagger_json)
+    return jsonify(swagger_json)
 
 
 SWAGGER_URL = '/api/docs'
@@ -70,4 +70,4 @@ swaggerui_blueprint = get_swaggerui_blueprint(SWAGGER_URL, API_URL, )
 app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0')
